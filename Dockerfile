@@ -35,7 +35,7 @@ RUN apt-get update \
 	nodejs \
 	graphviz \
 	ruby-full \
-  fakeroot
+  	fakeroot \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
