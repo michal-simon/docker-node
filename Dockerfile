@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -6,47 +6,27 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     build-essential \
-    software-properties-common \
+    ca-certificates \
+    zip \
+    unzip \
     curl \
     git \
-    python3-pip \
-    python3-dev \
-    libffi-dev \
-    libssl-dev \
-    libxml2-dev \
-    libxslt1-dev \
-    libjpeg8-dev \
-    zlib1g-dev \
-    gpg-agent \
-    sqlite3 \
-    autoconf \
-    automake \
-    libtool \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh \
- && bash nodesource_setup.sh
-
-RUN apt-get update \
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash \
  && apt-get install -y --no-install-recommends \
-	zip \
-	unzip \
-	nodejs \
-	graphviz \
-	ruby-full \
-  	fakeroot \
+    nodejs \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-RUN gem install deb-s3 bundler
+RUN npm config set cache /tmp/npm_cache --global
 
-RUN pip3 install setuptools --upgrade  --no-cache-dir \
- && pip3 install awscli --upgrade  --no-cache-dir
-
-ENV LANG=en_US.UTF-8 \
-    LANGUAGE=en_US.UTF-8 \
-    LC_ALL=en_US.UTF-8
+RUN cd /tmp \
+  && curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip \
+  && unzip -q awscliv2.zip \
+  && ./aws/install \
+  && rm -rf aws awscliv2.zip
 
 RUN mkdir -p /www
 
